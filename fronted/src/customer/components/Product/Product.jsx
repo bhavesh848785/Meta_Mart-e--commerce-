@@ -45,26 +45,35 @@ export default function Product() {
   const navigate = useNavigate();
 
   const handleFilter = (value, sectionID) => {
-    const serachParamms = new URLSearchParams(location.search);
+    const searchParamms = new URLSearchParams(location.search);
 
-    let filterValue = serachParamms.getAll(sectionID);
+    let filterValue = searchParamms.getAll(sectionID);
 
     if (filterValue.length > 0 && filterValue[0].split(",").includes(value)) {
       filterValue = filterValue[0].split(",").filter((item) => item !== value);
 
       if (filterValue.length === 0) {
-        serachParamms.delete(sectionID);
+        searchParamms.delete(sectionID);
       }
     } else {
       filterValue.push(value);
     }
 
     if (filterValue.length > 0) {
-      serachParamms.set(sectionID, filterValue.join(","));
+      searchParamms.set(sectionID, filterValue.join(","));
     }
-    const query = serachParamms.toString();
+    const query = searchParamms.toString();
     navigate({ search: `?${query}` });
   };
+
+  const handleRadioFilterChange = (e, sectionID) => {
+    const searchParamms = new URLSearchParams(location.search);
+
+    searchParamms.set(sectionID, e.target.value);
+    const query = searchParamms.toString();
+    navigate({ search: `?${query}` });
+  };
+
   return (
     <div className="bg-white">
       <div>
@@ -423,6 +432,9 @@ export default function Product() {
                                 {section.options.map((option, optionIdx) => (
                                   <>
                                     <FormControlLabel
+                                      onChange={(e) =>
+                                        handleRadioFilterChange(e, section.id)
+                                      }
                                       value={option.id}
                                       control={<Radio />}
                                       label={option.label}
